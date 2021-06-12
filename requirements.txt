@@ -1,3 +1,16 @@
+# python packages
+matplotlib
+numpy
+pandas
+scipy
+seaborn
+shapely
+statsmodels
+pingouin
+jupyter_dash
+scikit-image
+scikit-learn
+
 # local package
 -e .
 
