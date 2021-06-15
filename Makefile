@@ -34,6 +34,26 @@ clean:
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
 
+## Create data folder structure
+data_dir:
+	$(PYTHON_INTERPRETER) src/data/01_data-cleaning.py create_folders
+## Clean raw datasets (MFS)
+clean_all:
+	$(PYTHON_INTERPRETER) src/data/01_data-cleaning.py clean_all
+
+clean_uof:
+	$(PYTHON_INTERPRETER) src/data/01_data-cleaning.py clean_uof
+
+clean_cases:
+	$(PYTHON_INTERPRETER) src/data/01_data-cleaning.py clean_cases
+
+clean_crime:
+	$(PYTHON_INTERPRETER) src/data/01_data-cleaning.py clean_crime
+
+clean_crisis:
+	$(PYTHON_INTERPRETER) src/data/01_data-cleaning.py clean_crisis
+
+
 ## Lint using flake8
 lint:
 	flake8 src
