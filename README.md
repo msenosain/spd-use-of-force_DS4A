@@ -109,4 +109,52 @@ Project Organization
 
 --------
 
+Usage
+--------------
+1. Clone repository
+```
+git clone https://github.com/msenosain/spd-use-of-force_DS4A.git
+```
+2. Install requirements
+```
+make requirements
+```
+4. Create data directory 
+```
+make data_dir
+```
+5. Then paste the raw data in your local repository in the `data/raw` directory. Make sure that the file names are as following
+
+    - 'Miriam VonAschen-Cook - Crime_Data.csv',
+    - 'Miriam VonAschen-Cook - CAD2016.csv',
+    - 'Miriam VonAschen-Cook - CAD2017.csv',
+    - 'Miriam VonAschen-Cook - CAD2015.csv',
+    - 'Miriam VonAschen-Cook - CAD2020.csv',
+    - 'Miriam VonAschen-Cook - CAD2021.csv',
+    - 'Miriam VonAschen-Cook - CAD2019.csv',
+    - 'Miriam VonAschen-Cook - CAD2018.csv',
+    - 'Miriam VonAschen-Cook - UseOfForceProject-UoF Data w requested fields.xlsx'
+    - 'Miriam VonAschen-Cook - Crisis Report Preliminary Data.xlsx',
+ 
+6. Clean data
+
+    Data can be cleaned as a whole:
+    ```
+    make clean_all
+    ```
+    Or independently:
+
+    - Use of force data: `make clean_uof`
+    - Cases 2015-2021 data: `make clean_cases`
+    - Crime data: `make crime`
+    - Crisis data: `make crisis`
+
+
+
+
+
+
+
+
+
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
