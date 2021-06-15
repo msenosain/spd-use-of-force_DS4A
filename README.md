@@ -1,7 +1,7 @@
 Assessing Crisis Intervention Training By Seattle Police Department
 ==============================
 
-Capston project fe project from Team #120 as part of the DS4A/Empowerment program
+Capston project from Team #120 as part of the DS4A/Empowerment program
 
 Business Problem
 --------
