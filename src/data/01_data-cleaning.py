@@ -188,9 +188,11 @@ def clean_crisis():
     #---------------- Clean ----------------#
     ## Removing leading/trailling spaces from strings
     df.loc[:,df.dtypes == object] = df.loc[:,df.dtypes == object].apply(lambda x: x.str.strip().str.replace('#NAME\\?', '-'))
+    
     ## Specific column edits
     df['Disposition'] = df['Disposition'].str.upper().str.replace (" / ", "/", regex = True)
     df['Exhibiting Behavior (group)'] = df['Exhibiting Behavior (group)'].str.upper().str.replace ("BEHAVIOR – ", "", regex = True)
+    df['Exhibiting Behavior (group)'] = df['Exhibiting Behavior (group)'].str.replace ("BEHAVIOR - ", "", regex = True)
     df['Exhibiting Behavior (group)'] = df['Exhibiting Behavior (group)'].str.replace (" / ", "/", regex = True)
     df['Exhibiting Behavior (group)'] = df['Exhibiting Behavior (group)'].str.replace ("\xa0", "", regex = True)
     df['Offense/Incident Ind'] = df['Offense/Incident Ind'].str.upper()
@@ -202,7 +204,37 @@ def clean_crisis():
     df['Weapons Involved'] = df['Weapons Involved'].str.replace ("RIFLE", "FIREARM", regex = True)
     df['Weapons Involved'] = df['Weapons Involved'].str.replace ("SHOTGUN", "FIREARM", regex = True)
     df['Weapons Involved'] = df['Weapons Involved'].str.replace ("OTHER FIREARM", "FIREARM", regex = True)
+    df['Subject Gender'] = df['Subject Gender'].str.upper()
+    df['Subject Race'] = df['Subject Race'].str.upper()
 
+    ## Modifying column names
+    df = df.rename(columns = {'Exhibiting Behavior (group)': 'Behavior',
+        'Reported Date (Date)': 'Date',
+        'Offense/Incident Ind': 'OffenseIncident',
+        'Subject Age': 'Age',
+        'Subject Gender': 'Gender',
+        'Subject Race': 'Race',
+        'Techniques Used': 'Techniques',
+        'UoF Indicator': 'UoF',
+        'Weapons Involved': 'Weapons'})
+
+    ## Specific column edits
+    df['Date'] = pd.to_datetime(df['Date'])
+    df['Behavior'] = df['Behavior'].str.replace ("BELLIGERENT/UNCOOPERATIVE", 'BELLIGERENT', regex = True)
+    df['Behavior'] = df['Behavior'].str.replace ('BELLIGERENT',"BELLIGERENT/UNCOOPERATIVE", regex = True)
+    df['Disposition'] = df['Disposition'].replace ("MCT (MOBILE CRISIS TEAM)", "MOBILE CRISIS TEAM" )
+    df['Disposition'] = df['Disposition'].replace ("RESOURCES DECLINED", "RESOURCES OFFERED/DECLINED" )
+    df['Disposition'] = df['Disposition'].replace ("DMHP REFERRAL", "DMHP/REFERRAL (DCR)" )
+    df['Disposition'] = df['Disposition'].replace ("CRISIS CLINIC (CRISIS CONNECTIONS)", "CRISIS CLINIC" )
+    df['Disposition'] = df['Disposition'].replace ("SHELTER", "SHELTER / SHELTER TRANSPORT" )
+    df['Disposition'] = df['Disposition'].replace ("SHELTER TRANSPORT", "SHELTER / SHELTER TRANSPORT" )
+    df['Disposition'] = df['Disposition'].replace ("CASE MANAGER/MH AGENCY NOTIFIED", "MENTAL HEALTH AGENCY OR CASE MANAGER NOTIFIED" )
+    df['Disposition'] = df['Disposition'].replace ("DRUG/ALCOHOL TREATMENT REFERRAL", "SOCIAL SERVICE/ALCOHOL AND DRUG/TREATMENT REFERRAL" )
+    df['Disposition'] = df['Disposition'].replace ("ARRESTED (REQUIRES ARREST REPORT)", "ARRESTED" )
+    df['Disposition'] = df['Disposition'].replace ("SUBJECT ARRESTED", "ARRESTED" )
+    df['Disposition'] = df['Disposition'].replace ("NO ACTION POSSIBLE/NECESSARY", "NO ACTION POSSIBLE/NECESSARY/UNABLE TO CONTACT" )
+    df['Disposition'] = df['Disposition'].replace ("UNABLE TO CONTACT", "NO ACTION POSSIBLE/NECESSARY/UNABLE TO CONTACT" )
+    df['Behavior'] = df['Behavior'].replace ("DISORDERLY", "DISORDERLY/DISRUPTIVE" )
     #---------------- Write ----------------#
     df.to_csv(os.path.join(output_filepath, 'MVAcrisis_cleaned.csv'), index = False)
 
