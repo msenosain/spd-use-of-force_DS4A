@@ -123,9 +123,17 @@ def clean_cases():
     ## GO num to integer
     df['GO Num'] = df['GO Num'].astype(int)
     ## Converted to datetime
-    # df['First Dispatch Time'] = pd.to_datetime(df['First Dispatch Time'])
-    # df['Clear Time'] = pd.to_datetime(df['Clear Time'])
-    df['Total Service Time'] = pd.to_datetime(df['Total Service Time'], unit = 's').dt.minute #Convert to minute
+    df['First Dispatch Time'] = pd.to_datetime(df['First Dispatch Time'], errors='coerce')
+    df['Clear Time'] = pd.to_datetime(df['Clear Time'], errors='coerce')
+    df['Total Service Time'] = pd.to_datetime(df['Total Service Time'], unit = 's').dt.minute.astype(int) #Convert to minute
+    df['First Dispatch Year'] = df['First Dispatch Time'].dt.year.astype(int)
+    df['First Dispatch Month'] = df['First Dispatch Time'].dt.month.astype(int)
+    df['First Dispatch Weekday'] = df['First Dispatch Time'].dt.weekday.astype(int)
+    df['First Dispatch Hour'] = df['First Dispatch Time'].dt.hour.astype(int)
+    df['Clear Year'] = df['Clear Time'].dt.year.astype(int)
+    df['Clear Month'] = df['Clear Time'].dt.month.astype(int)
+    df['Clear Weekday'] = df['Clear Time'].dt.weekday.astype(int)
+    df['Clear Hour'] = df['Clear Time'].dt.hour.astype(int)
 
     #---------------- Write ----------------#
     df.to_csv(os.path.join(output_filepath, 'MVAallcases_cleaned.csv'), index = False)
