@@ -122,7 +122,11 @@ Usage
 ```
 git clone https://github.com/msenosain/spd-use-of-force_DS4A.git
 ```
-2. Install requirements
+2. Create environment
+```
+make create_environment
+```
+3. Install requirements
 ```
 make requirements
 ```
