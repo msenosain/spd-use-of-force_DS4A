@@ -125,15 +125,24 @@ def clean_cases():
     ## Converted to datetime
     df['First Dispatch Time'] = pd.to_datetime(df['First Dispatch Time'], errors='coerce')
     df['Clear Time'] = pd.to_datetime(df['Clear Time'], errors='coerce')
-    df['Total Service Time'] = pd.to_datetime(df['Total Service Time'], unit = 's').dt.minute #Convert to minute
-    df['First Dispatch Year'] = df['First Dispatch Time'].dt.year
-    df['First Dispatch Month'] = df['First Dispatch Time'].dt.month
-    df['First Dispatch Weekday'] = df['First Dispatch Time'].dt.weekday
-    df['First Dispatch Hour'] = df['First Dispatch Time'].dt.hour
-    df['Clear Year'] = df['Clear Time'].dt.year
-    df['Clear Month'] = df['Clear Time'].dt.month
-    df['Clear Weekday'] = df['Clear Time'].dt.weekday
-    df['Clear Hour'] = df['Clear Time'].dt.hour
+    ## Drop NaN values
+    df = df.dropna()
+    ## Create new cols from datetime data
+    df['Total Service Time'] = pd.to_datetime(df['Total Service Time'], unit = 's').dt.minute.astype(int) #Convert to minute
+    df['First Dispatch Year'] = df['First Dispatch Time'].dt.year.astype(int)
+    df['First Dispatch Month'] = df['First Dispatch Time'].dt.month.astype(int)
+    df['First Dispatch Weekday'] = df['First Dispatch Time'].dt.weekday.astype(int)
+    df['First Dispatch Hour'] = df['First Dispatch Time'].dt.hour.astype(int)
+    df['Clear Year'] = df['Clear Time'].dt.year.astype(int)
+    df['Clear Month'] = df['Clear Time'].dt.month.astype(int)
+    df['Clear Weekday'] = df['Clear Time'].dt.weekday.astype(int)
+    df['Clear Hour'] = df['Clear Time'].dt.hour.astype(int)
+    ## Edit some datetime errors
+    df['Clear Year'] = df['Clear Year'].replace(1900, 2019)
+    df.loc[df['Year']==2020,'First Dispatch Year'] = 2020
+    df.loc[df['Year']==2020,'Clear Year'] = 2020
+    df = df[df['First Dispatch Year']==df['Year']] #First dispatch year == Year
+    df = df[df['Clear Year']>=df['Year']] #Clear Year >= Year
 
     #---------------- Write ----------------#
     df.to_csv(os.path.join(output_filepath, 'MVAallcases_cleaned.csv'), index = False)
