@@ -80,7 +80,7 @@ def clean_uof():
     df.loc[(df['Subject Gender'] == "Female"), "Subject Gender"] = "F"
     df.loc[(df['Subject Gender'] == "Not Specified"), "Subject Gender"] = "N"
     ## Removing leading/trailling spaces from strings
-    df.loc[:,df.dtypes == object] = df.loc[:,df.dtypes == object].apply(lambda x: x.str.strip().str.replace('#NAME?', '-'))
+    df.loc[:,df.dtypes == object] = df.loc[:,df.dtypes == object].apply(lambda x: x.str.strip().str.replace('#NAME\\?', '-'))
 
     #---------------- Write ----------------#
     df.to_csv(os.path.join(output_filepath, 'MVAtrain_cleaned.csv'), index = False)
@@ -115,7 +115,7 @@ def clean_cases():
 
     #---------------- Clean ----------------#
     ## Removing leading/trailling spaces from strings
-    df.loc[:,df.dtypes == object] = df.loc[:,df.dtypes == object].apply(lambda x: x.str.strip().str.replace('#NAME?', '-'))
+    df.loc[:,df.dtypes == object] = df.loc[:,df.dtypes == object].apply(lambda x: x.str.strip().str.replace('#NAME\\?', '-'))
     ## Clean “CAD Event ID” by converting it to integer
     df['CAD Event ID'] = df['CAD Event ID'].astype(int)
     ## Clean “Officer Serial Num” by converting it to integer
@@ -123,9 +123,26 @@ def clean_cases():
     ## GO num to integer
     df['GO Num'] = df['GO Num'].astype(int)
     ## Converted to datetime
-    # df['First Dispatch Time'] = pd.to_datetime(df['First Dispatch Time'])
-    # df['Clear Time'] = pd.to_datetime(df['Clear Time'])
-    df['Total Service Time'] = pd.to_datetime(df['Total Service Time'], unit = 's').dt.minute #Convert to minute
+    df['First Dispatch Time'] = pd.to_datetime(df['First Dispatch Time'], errors='coerce')
+    df['Clear Time'] = pd.to_datetime(df['Clear Time'], errors='coerce')
+    ## Drop NaN values
+    df = df.dropna()
+    ## Create new cols from datetime data
+    df['Total Service Time'] = pd.to_datetime(df['Total Service Time'], unit = 's').dt.minute.astype(int) #Convert to minute
+    df['First Dispatch Year'] = df['First Dispatch Time'].dt.year.astype(int)
+    df['First Dispatch Month'] = df['First Dispatch Time'].dt.month.astype(int)
+    df['First Dispatch Weekday'] = df['First Dispatch Time'].dt.weekday.astype(int)
+    df['First Dispatch Hour'] = df['First Dispatch Time'].dt.hour.astype(int)
+    df['Clear Year'] = df['Clear Time'].dt.year.astype(int)
+    df['Clear Month'] = df['Clear Time'].dt.month.astype(int)
+    df['Clear Weekday'] = df['Clear Time'].dt.weekday.astype(int)
+    df['Clear Hour'] = df['Clear Time'].dt.hour.astype(int)
+    ## Edit some datetime errors
+    df['Clear Year'] = df['Clear Year'].replace(1900, 2019)
+    df.loc[df['Year']==2020,'First Dispatch Year'] = 2020
+    df.loc[df['Year']==2020,'Clear Year'] = 2020
+    df = df[df['First Dispatch Year']==df['Year']] #First dispatch year == Year
+    df = df[df['Clear Year']>=df['Year']] #Clear Year >= Year
 
     #---------------- Write ----------------#
     df.to_csv(os.path.join(output_filepath, 'MVAallcases_cleaned.csv'), index = False)
@@ -151,7 +168,7 @@ def clean_crime():
     df = pd.read_csv(os.path.join(input_filepath, crime))
 
     #---------------- Clean ----------------#
-    df.loc[:,df.dtypes == object] = df.loc[:,df.dtypes == object].apply(lambda x: x.str.strip().str.replace('#NAME?', '-'))
+    df.loc[:,df.dtypes == object] = df.loc[:,df.dtypes == object].apply(lambda x: x.str.strip().str.replace('#NAME\\?', '-'))
     ## Change to datetime
     df['Offense Start DateTime'] = pd.to_datetime(df['Offense Start DateTime'])
     ## Make the year column
@@ -187,10 +204,12 @@ def clean_crisis():
 
     #---------------- Clean ----------------#
     ## Removing leading/trailling spaces from strings
-    df.loc[:,df.dtypes == object] = df.loc[:,df.dtypes == object].apply(lambda x: x.str.strip().str.replace('#NAME?', '-'))
+    df.loc[:,df.dtypes == object] = df.loc[:,df.dtypes == object].apply(lambda x: x.str.strip().str.replace('#NAME\\?', '-'))
+    
     ## Specific column edits
     df['Disposition'] = df['Disposition'].str.upper().str.replace (" / ", "/", regex = True)
     df['Exhibiting Behavior (group)'] = df['Exhibiting Behavior (group)'].str.upper().str.replace ("BEHAVIOR – ", "", regex = True)
+    df['Exhibiting Behavior (group)'] = df['Exhibiting Behavior (group)'].str.replace ("BEHAVIOR - ", "", regex = True)
     df['Exhibiting Behavior (group)'] = df['Exhibiting Behavior (group)'].str.replace (" / ", "/", regex = True)
     df['Exhibiting Behavior (group)'] = df['Exhibiting Behavior (group)'].str.replace ("\xa0", "", regex = True)
     df['Offense/Incident Ind'] = df['Offense/Incident Ind'].str.upper()
@@ -202,7 +221,37 @@ def clean_crisis():
     df['Weapons Involved'] = df['Weapons Involved'].str.replace ("RIFLE", "FIREARM", regex = True)
     df['Weapons Involved'] = df['Weapons Involved'].str.replace ("SHOTGUN", "FIREARM", regex = True)
     df['Weapons Involved'] = df['Weapons Involved'].str.replace ("OTHER FIREARM", "FIREARM", regex = True)
+    df['Subject Gender'] = df['Subject Gender'].str.upper()
+    df['Subject Race'] = df['Subject Race'].str.upper()
 
+    ## Modifying column names
+    df = df.rename(columns = {'Exhibiting Behavior (group)': 'Behavior',
+        'Reported Date (Date)': 'Date',
+        'Offense/Incident Ind': 'OffenseIncident',
+        'Subject Age': 'Age',
+        'Subject Gender': 'Gender',
+        'Subject Race': 'Race',
+        'Techniques Used': 'Techniques',
+        'UoF Indicator': 'UoF',
+        'Weapons Involved': 'Weapons'})
+
+    ## Specific column edits
+    df['Date'] = pd.to_datetime(df['Date'])
+    df['Behavior'] = df['Behavior'].str.replace ("BELLIGERENT/UNCOOPERATIVE", 'BELLIGERENT', regex = True)
+    df['Behavior'] = df['Behavior'].str.replace ('BELLIGERENT',"BELLIGERENT/UNCOOPERATIVE", regex = True)
+    df['Disposition'] = df['Disposition'].replace ("MCT (MOBILE CRISIS TEAM)", "MOBILE CRISIS TEAM" )
+    df['Disposition'] = df['Disposition'].replace ("RESOURCES DECLINED", "RESOURCES OFFERED/DECLINED" )
+    df['Disposition'] = df['Disposition'].replace ("DMHP REFERRAL", "DMHP/REFERRAL (DCR)" )
+    df['Disposition'] = df['Disposition'].replace ("CRISIS CLINIC (CRISIS CONNECTIONS)", "CRISIS CLINIC" )
+    df['Disposition'] = df['Disposition'].replace ("SHELTER", "SHELTER / SHELTER TRANSPORT" )
+    df['Disposition'] = df['Disposition'].replace ("SHELTER TRANSPORT", "SHELTER / SHELTER TRANSPORT" )
+    df['Disposition'] = df['Disposition'].replace ("CASE MANAGER/MH AGENCY NOTIFIED", "MENTAL HEALTH AGENCY OR CASE MANAGER NOTIFIED" )
+    df['Disposition'] = df['Disposition'].replace ("DRUG/ALCOHOL TREATMENT REFERRAL", "SOCIAL SERVICE/ALCOHOL AND DRUG/TREATMENT REFERRAL" )
+    df['Disposition'] = df['Disposition'].replace ("ARRESTED (REQUIRES ARREST REPORT)", "ARRESTED" )
+    df['Disposition'] = df['Disposition'].replace ("SUBJECT ARRESTED", "ARRESTED" )
+    df['Disposition'] = df['Disposition'].replace ("NO ACTION POSSIBLE/NECESSARY", "NO ACTION POSSIBLE/NECESSARY/UNABLE TO CONTACT" )
+    df['Disposition'] = df['Disposition'].replace ("UNABLE TO CONTACT", "NO ACTION POSSIBLE/NECESSARY/UNABLE TO CONTACT" )
+    df['Behavior'] = df['Behavior'].replace ("DISORDERLY", "DISORDERLY/DISRUPTIVE" )
     #---------------- Write ----------------#
     df.to_csv(os.path.join(output_filepath, 'MVAcrisis_cleaned.csv'), index = False)
 
