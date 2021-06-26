@@ -126,7 +126,7 @@ def clean_cases():
     df['First Dispatch Time'] = pd.to_datetime(df['First Dispatch Time'], errors='coerce')
     df['Clear Time'] = pd.to_datetime(df['Clear Time'], errors='coerce')
     ## Drop NaN values
-    df.dropna(subset=['First Dispatch Time', 'Clear Time'], inplace=True)
+    df.dropna(subset=['First Dispatch Time', 'Clear Time', 'Total Service Time'], inplace=True)
     ## Create new cols from datetime data
     df['Total Service Time'] = pd.to_datetime(df['Total Service Time'], unit = 's').dt.minute.astype(int) #Convert to minute
     df['First Dispatch Year'] = df['First Dispatch Time'].dt.year.astype(int)
