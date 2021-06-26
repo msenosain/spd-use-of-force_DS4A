@@ -121,7 +121,7 @@ def clean_cases():
     ## Clean “Officer Serial Num” by converting it to integer
     df['Officer Serial Num'] = df['Officer Serial Num'].astype(int)
     ## GO num to integer
-    df['GO Num'] = df['GO Num'].astype(int)
+    df['GO Num'] = df['GO Num'].astype(np.int64)
     ## Converted to datetime
     df['First Dispatch Time'] = pd.to_datetime(df['First Dispatch Time'], errors='coerce')
     df['Clear Time'] = pd.to_datetime(df['Clear Time'], errors='coerce')
@@ -178,6 +178,11 @@ def clean_crime():
     df.dropna(subset=['Year'], inplace = True)
     ## Year to integer
     df['Year'] = df['Year'].astype(int) #pd.to_numeric(df['Year'], downcast='integer')
+    ## Change GO column titles to be consistent with one another
+    df=df.rename(columns={"GO": "GO Num"})
+    #drop GO Num entries with typos
+    typo_list = ['2020=197851', '20210000O27515', '2021=056435', '20 21000069987']
+    df.drop(df.loc[df["GO Num"].isin(typo_list)].index, inplace=True)
 
     #---------------- Write ----------------#
     df.to_csv(os.path.join(output_filepath, 'MVAcrime_cleaned.csv'), index = False)
