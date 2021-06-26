@@ -121,12 +121,12 @@ def clean_cases():
     ## Clean “Officer Serial Num” by converting it to integer
     df['Officer Serial Num'] = df['Officer Serial Num'].astype(int)
     ## GO num to integer
-    df['GO Num'] = df['GO Num'].astype(int)
+    df['GO Num'] = df['GO Num'].fillna(0).astype(np.int64)
     ## Converted to datetime
     df['First Dispatch Time'] = pd.to_datetime(df['First Dispatch Time'], errors='coerce')
     df['Clear Time'] = pd.to_datetime(df['Clear Time'], errors='coerce')
     ## Drop NaN values
-    df = df.dropna()
+    df.dropna(subset=['First Dispatch Time', 'Clear Time'], inplace=True)
     ## Create new cols from datetime data
     df['Total Service Time'] = pd.to_datetime(df['Total Service Time'], unit = 's').dt.minute.astype(int) #Convert to minute
     df['First Dispatch Year'] = df['First Dispatch Time'].dt.year.astype(int)
@@ -143,6 +143,8 @@ def clean_cases():
     df.loc[df['Year']==2020,'Clear Year'] = 2020
     df = df[df['First Dispatch Year']==df['Year']] #First dispatch year == Year
     df = df[df['Clear Year']>=df['Year']] #Clear Year >= Year
+    ## Fix CAD Event ID to match with other datasets
+    df["CAD Event ID"].astype(str).apply(lambda x: x[:4] + "0" + x[4:] if len(x) == 13 else x)
 
     #---------------- Write ----------------#
     df.to_csv(os.path.join(output_filepath, 'MVAallcases_cleaned.csv'), index = False)
@@ -178,6 +180,11 @@ def clean_crime():
     df.dropna(subset=['Year'], inplace = True)
     ## Year to integer
     df['Year'] = df['Year'].astype(int) #pd.to_numeric(df['Year'], downcast='integer')
+    ## Change GO column titles to be consistent with one another
+    df=df.rename(columns={"GO": "GO Num"})
+    #drop GO Num entries with typos
+    typo_list = ['2020=197851', '20210000O27515', '2021=056435', '20 21000069987']
+    df.drop(df.loc[df["GO Num"].isin(typo_list)].index, inplace=True)
 
     #---------------- Write ----------------#
     df.to_csv(os.path.join(output_filepath, 'MVAcrime_cleaned.csv'), index = False)
