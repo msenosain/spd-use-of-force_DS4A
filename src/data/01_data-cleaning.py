@@ -232,20 +232,21 @@ def clean_crisis():
     df['Subject Race'] = df['Subject Race'].str.upper()
 
     ## Modifying column names
-    df = df.rename(columns = {'Exhibiting Behavior (group)': 'Behavior',
-        'Reported Date (Date)': 'Date',
-        'Offense/Incident Ind': 'OffenseIncident',
-        'Subject Age': 'Age',
-        'Subject Gender': 'Gender',
-        'Subject Race': 'Race',
-        'Techniques Used': 'Techniques',
-        'UoF Indicator': 'UoF',
-        'Weapons Involved': 'Weapons'})
+    df = df.rename(columns = {#'Exhibiting Behavior (group)': 'Behavior',
+        'Reported Date (Date)': 'Reported Date',
+        'Offense/Incident Ind': 'OffenseIncident'
+        #'Subject Age': 'Age',
+        #'Subject Gender': 'Gender',
+        #'Subject Race': 'Race',
+        #'Techniques Used': 'Techniques',
+        #'UoF Indicator': 'UoF',
+        #'Weapons Involved': 'Weapons'
+        })
 
     ## Specific column edits
-    df['Date'] = pd.to_datetime(df['Date'])
-    df['Behavior'] = df['Behavior'].str.replace ("BELLIGERENT/UNCOOPERATIVE", 'BELLIGERENT', regex = True)
-    df['Behavior'] = df['Behavior'].str.replace ('BELLIGERENT',"BELLIGERENT/UNCOOPERATIVE", regex = True)
+    df['Reported Date'] = pd.to_datetime(df['Reported Date'])
+    df['Exhibiting Behavior (group)'] = df['Exhibiting Behavior (group)'].str.replace ("BELLIGERENT/UNCOOPERATIVE", 'BELLIGERENT', regex = True)
+    df['Exhibiting Behavior (group)'] = df['Exhibiting Behavior (group)'].str.replace ('BELLIGERENT',"BELLIGERENT/UNCOOPERATIVE", regex = True)
     df['Disposition'] = df['Disposition'].replace ("MCT (MOBILE CRISIS TEAM)", "MOBILE CRISIS TEAM" )
     df['Disposition'] = df['Disposition'].replace ("RESOURCES DECLINED", "RESOURCES OFFERED/DECLINED" )
     df['Disposition'] = df['Disposition'].replace ("DMHP REFERRAL", "DMHP/REFERRAL (DCR)" )
@@ -258,7 +259,7 @@ def clean_crisis():
     df['Disposition'] = df['Disposition'].replace ("SUBJECT ARRESTED", "ARRESTED" )
     df['Disposition'] = df['Disposition'].replace ("NO ACTION POSSIBLE/NECESSARY", "NO ACTION POSSIBLE/NECESSARY/UNABLE TO CONTACT" )
     df['Disposition'] = df['Disposition'].replace ("UNABLE TO CONTACT", "NO ACTION POSSIBLE/NECESSARY/UNABLE TO CONTACT" )
-    df['Behavior'] = df['Behavior'].replace ("DISORDERLY", "DISORDERLY/DISRUPTIVE" )
+    df['Exhibiting Behavior (group)'] = df['Exhibiting Behavior (group)'].replace ("DISORDERLY", "DISORDERLY/DISRUPTIVE" )
     #---------------- Write ----------------#
     df.to_csv(os.path.join(output_filepath, 'MVAcrisis_cleaned.csv'), index = False)
 
