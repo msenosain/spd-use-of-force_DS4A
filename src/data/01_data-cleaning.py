@@ -139,8 +139,8 @@ def clean_cases():
     df['Clear Hour'] = df['Clear Time'].dt.hour.astype(int)
     ## Edit some datetime errors
     df['Clear Year'] = df['Clear Year'].replace(1900, 2019)
-    df.loc[df['Year']==2020,'First Dispatch Year'] = 2020
-    df.loc[df['Year']==2020,'Clear Year'] = 2020
+    #df.loc[df['Year']==2020,'First Dispatch Year'] = 2020
+    #df.loc[df['Year']==2020,'Clear Year'] = 2020
     df = df[df['First Dispatch Year']==df['Year']] #First dispatch year == Year
     df = df[df['Clear Year']>=df['Year']] #Clear Year >= Year
     ## Fix CAD Event ID to match with other datasets
