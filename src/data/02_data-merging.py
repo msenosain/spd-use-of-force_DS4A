@@ -36,9 +36,14 @@ def merge_datasets():
     # inner join to keep only the rows that can be joined with the other dfs
     df_crisis_j = pd.merge(df_crisis, common_id, how = "inner", on = ["CAD Event ID"])
 
-    # For the rest of datasets we do an outer join to keep all the rows
-    df_merged = pd.merge(df_crisis_j, df_crime, how = "outer", on = ["GO Num"])
-    df_merged = pd.merge(df_merged, df_uof, how = "outer", on = ["GO Num"])
+    # Left join on the crime and uof datasets to the common_id cols
+    df_crime_j = pd.merge(df_crime, common_id, how = "left", on = ["GO Num"])
+    df_uof_j = pd.merge(df_uof, common_id, how = "left", on = ["GO Num"])
+
+
+    # Finally we do an outer join to keep all the rows of the datasets
+    df_merged = pd.merge(df_crisis_j, df_crime_j, how = "outer", on = ["GO Num"])
+    df_merged = pd.merge(df_merged, df_uof_j, how = "outer", on = ["GO Num"])
 
     # Write csv
     df_merged.to_csv(os.path.join(filepath, 'MVA_cleaned_merged.csv'), index = False)
