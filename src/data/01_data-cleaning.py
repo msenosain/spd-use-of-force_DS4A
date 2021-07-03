@@ -80,7 +80,7 @@ def clean_uof():
     df.loc[(df['Subject Gender'] == "Female"), "Subject Gender"] = "F"
     df.loc[(df['Subject Gender'] == "Not Specified"), "Subject Gender"] = "N"
     ## Removing leading/trailling spaces from strings
-    df.loc[:,df.dtypes == object] = df.loc[:,df.dtypes == object].apply(lambda x: x.str.strip())#.str.replace('#NAME\\?', '-'))
+    df = df.apply(lambda x: x.apply(str).str.strip().str.replace('#NAME\\?', '-') if x.dtype == 'object' else x)
 
     #---------------- Write ----------------#
     df.to_csv(os.path.join(output_filepath, 'MVAtrain_cleaned.csv'), index = False)
@@ -115,7 +115,7 @@ def clean_cases():
 
     #---------------- Clean ----------------#
     ## Removing leading/trailling spaces from strings
-    df.loc[:,df.dtypes == object] = df.loc[:,df.dtypes == object].apply(lambda x: x.str.strip())#.str.replace('#NAME\\?', '-'))
+    df = df.apply(lambda x: x.apply(str).str.strip().str.replace('#NAME\\?', '-') if x.dtype == 'object' else x)
     ## Clean “CAD Event ID” by converting it to integer
     df['CAD Event ID'] = df['CAD Event ID'].astype(int)
     ## Clean “Officer Serial Num” by converting it to integer
@@ -170,7 +170,8 @@ def clean_crime():
     df = pd.read_csv(os.path.join(input_filepath, crime))
 
     #---------------- Clean ----------------#
-    df.loc[:,df.dtypes == object] = df.loc[:,df.dtypes == object].apply(lambda x: x.str.strip())#.str.replace('#NAME\\?', '-'))
+    ## Removing leading/trailling spaces from strings
+    df = df.apply(lambda x: x.apply(str).str.strip().str.replace('#NAME\\?', '-') if x.dtype == 'object' else x)
     ## Change to datetime
     df['Offense Start DateTime'] = pd.to_datetime(df['Offense Start DateTime'])
     ## Make the year column
@@ -211,7 +212,7 @@ def clean_crisis():
 
     #---------------- Clean ----------------#
     ## Removing leading/trailling spaces from strings
-    df.loc[:,df.dtypes == object] = df.loc[:,df.dtypes == object].apply(lambda x: x.str.strip())#.str.replace('#NAME\\?', '-'))
+    df = df.apply(lambda x: x.apply(str).str.strip().str.replace('#NAME\\?', '-') if x.dtype == 'object' else x)
     
     ## Specific column edits
     df['Disposition'] = df['Disposition'].str.upper().str.replace (" / ", "/", regex = True)
