@@ -45,5 +45,3 @@ def merge_datasets():
 
 
 merge_datasets()
-
-
