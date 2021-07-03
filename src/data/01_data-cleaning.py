@@ -79,6 +79,11 @@ def clean_uof():
     df.loc[(df['Subject Gender'] == "Male"), "Subject Gender"] = "M"
     df.loc[(df['Subject Gender'] == "Female"), "Subject Gender"] = "F"
     df.loc[(df['Subject Gender'] == "Not Specified"), "Subject Gender"] = "N"
+    ## Clean “Officer Serial Num” by converting it to integer
+    #df['Officer Serial Num'] = df['Officer Serial Num'].fillna(0).astype(np.int64)
+    df['Officer Serial Num'] = pd.to_numeric(df['Officer Serial Num'], errors='coerce').fillna(0).astype(np.int64)
+    ## GO num to integer
+    df['GO Num'] = df['GO Num'].fillna(0).astype(np.int64)
     ## Removing leading/trailling spaces from strings
     df = df.apply(lambda x: x.apply(str).str.strip().str.replace('#NAME\\?', '-') if x.dtype == 'object' else x)
 
@@ -116,8 +121,10 @@ def clean_cases():
     #---------------- Clean ----------------#
     ## Removing leading/trailling spaces from strings
     df = df.apply(lambda x: x.apply(str).str.strip().str.replace('#NAME\\?', '-') if x.dtype == 'object' else x)
+    ## Fix CAD Event ID to match with other datasets
+    df["CAD Event ID"] = df["CAD Event ID"].astype(str).apply(lambda x: x[:4] + "0" + x[4:] if len(x) == 13 else x)
     ## Clean “CAD Event ID” by converting it to integer
-    df['CAD Event ID'] = df['CAD Event ID'].astype(int)
+    df['CAD Event ID'] = df['CAD Event ID'].fillna(0).astype(np.int64)
     ## Clean “Officer Serial Num” by converting it to integer
     df['Officer Serial Num'] = df['Officer Serial Num'].astype(int)
     ## GO num to integer
@@ -143,8 +150,7 @@ def clean_cases():
     #df.loc[df['Year']==2020,'Clear Year'] = 2020
     df = df[df['First Dispatch Year']==df['Year']] #First dispatch year == Year
     df = df[df['Clear Year']>=df['Year']] #Clear Year >= Year
-    ## Fix CAD Event ID to match with other datasets
-    df["CAD Event ID"].astype(str).apply(lambda x: x[:4] + "0" + x[4:] if len(x) == 13 else x)
+    
 
     #---------------- Write ----------------#
     df.to_csv(os.path.join(output_filepath, 'MVAallcases_cleaned.csv'), index = False)
@@ -172,6 +178,8 @@ def clean_crime():
     #---------------- Clean ----------------#
     ## Removing leading/trailling spaces from strings
     df = df.apply(lambda x: x.apply(str).str.strip().str.replace('#NAME\\?', '-') if x.dtype == 'object' else x)
+    ## GO num to integer
+    df['GO Num'] = df['GO Num'].fillna(0).astype(np.int64)
     ## Change to datetime
     df['Offense Start DateTime'] = pd.to_datetime(df['Offense Start DateTime'])
     ## Make the year column
@@ -213,7 +221,10 @@ def clean_crisis():
     #---------------- Clean ----------------#
     ## Removing leading/trailling spaces from strings
     df = df.apply(lambda x: x.apply(str).str.strip().str.replace('#NAME\\?', '-') if x.dtype == 'object' else x)
-    
+    ## Fix CAD Event ID to match with other datasets
+    df["CAD Event ID"] = df["CAD Event ID"].astype(str).apply(lambda x: x[:4] + "0" + x[4:] if len(x) == 13 else x)
+    ## Clean “CAD Event ID” by converting it to integer
+    df['CAD Event ID'] = df['CAD Event ID'].fillna(0).astype(np.int64)
     ## Specific column edits
     df['Disposition'] = df['Disposition'].str.upper().str.replace (" / ", "/", regex = True)
     df['Exhibiting Behavior (group)'] = df['Exhibiting Behavior (group)'].str.upper().str.replace ("BEHAVIOR – ", "", regex = True)
