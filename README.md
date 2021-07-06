@@ -160,6 +160,11 @@ make data_dir
     - Crime data: `make crime`
     - Crisis data: `make crisis`
 
+7. Merge dataset
+```
+make merge_datasets
+```
+
 
 
 
