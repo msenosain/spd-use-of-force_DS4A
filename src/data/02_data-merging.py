@@ -25,7 +25,9 @@ def merge_datasets():
 
     # Create a df from id columns and drop their duplicates
     common_id = (
-        df_cases[["CAD Event ID", "GO Num"]]
+        df_cases[["CAD Event ID", "GO Num", "AS Of Officer Title",
+        "Clear By Desc", "Call Type Desc", "Call Priority Code", 
+        "Total Service Time", "First Dispatch Time", "Clear Time"]]
         .drop_duplicates()
     )
 
