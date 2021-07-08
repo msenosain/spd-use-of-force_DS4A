@@ -23,43 +23,21 @@ def merge_datasets():
     df_crime = pd.read_csv(os.path.join(filepath, "MVAcrime_cleaned.csv"))
     df_uof = pd.read_csv(os.path.join(filepath, "MVAtrain_cleaned.csv"))
 
-    # Create a df from id columns and drop their duplicates
-    common_id = (
-        df_cases[["CAD Event ID", "GO Num"]]
-        .drop_duplicates()
-    )
-
-    # dataframe with columns of interest from cases/calls dataset
-    df_cases_j = (
-        df_cases[["GO Num", "AS Of Officer Title",
-        "Clear By Desc", "Call Type Desc", "Call Priority Code", 
-        "Total Service Time", "First Dispatch Time", "Clear Time"]]
-        .drop_duplicates()
-    )
-
     # Drop "CAD Event ID" = -1 from crisis dataset
     df_crisis.drop(df_crisis[df_crisis["CAD Event ID"] == -1].index, inplace=True)
 
-    # Crisis dataset only has CAD Event ID (no GO Num), so we do an
-    # inner join to keep only the rows that can be joined with the other dfs
-    df_crisis_j = pd.merge(df_crisis, common_id, how = "inner", on = ["CAD Event ID"])
-
-    # Left join on the crime and uof datasets to the common_id cols to keep everything in crime and uof
-    df_crime_j = pd.merge(df_crime, common_id, how = "left", on = ["GO Num"])
-    df_uof_j = pd.merge(df_uof, common_id, how = "left", on = ["GO Num"])
-
-
-    # Outer join to keep all the rows of the datasets
-    df_merged = pd.merge(df_crisis_j, df_crime_j, how = "outer", on = ["GO Num"])
-    df_merged = pd.merge(df_merged, df_uof_j, how = "outer", on = ["GO Num"])
-
-    # Left join to keep everything in merged and only the necessary rows from cases/calls
-    df_merged = pd.merge(df_merged, df_cases_j, how = "left", on = ["GO Num"])
+    # left merge cases to crime dataset
+    df_merged = pd.merge(df_cases, df_crime, how = "left", on = ["GO Num"], 
+        suffixes = ('_calls', '_crime'))
+    # left merge cases+crime to train/uof dataset
+    df_merged = pd.merge(df_merged, df_uof, how = "left", on = ["GO Num"], 
+        suffixes = ('_crime', '_train'))
+    # left merge crisis to cases+crime+train/uof datasets
+    df_merged = pd.merge(df_crisis, df_merged, how = "left", on = ["CAD Event ID"],
+        suffixes = ('_crisis', '_train'))
 
     # Write csv
     df_merged.to_csv(os.path.join(filepath, 'MVA_cleaned_merged.csv'), index = False)
-
-    #(542128, 43)
 
 
 merge_datasets()
