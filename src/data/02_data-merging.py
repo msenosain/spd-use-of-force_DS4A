@@ -8,10 +8,7 @@ import os
 
 def merge_datasets():
     """
-    Reads the cleaned datasets and merged them. Only merging crisis, crime and 
-    UoF datasets, cases/calls dataset is too big compared to the others and will
-    introduce too many NaNs, therefore it is only used to extract the common id
-    columns CAD Event ID and GO Num to merge the other datasets.
+    Reads the cleaned datasets and merged them.
     
 
     """
