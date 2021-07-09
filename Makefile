@@ -53,6 +53,10 @@ clean_crime:
 clean_crisis:
 	$(PYTHON_INTERPRETER) src/data/01_data-cleaning.py clean_crisis
 
+## Merge files
+merge_datasets:
+	$(PYTHON_INTERPRETER) src/data/02_data-merging.py
+
 
 ## Lint using flake8
 lint:
