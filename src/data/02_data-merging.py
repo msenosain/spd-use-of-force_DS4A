@@ -43,7 +43,7 @@ def merge_datasets():
         'Subject Race', 'Occurred Date'], axis = 1, inplace=True)
 
     # left merge cases to crime dataset
-    df_merged = pd.merge(df_cases, df_crime, how = "left", on = ["GO Num"]
+    df_merged = pd.merge(df_cases, df_crime, how = "left", on = ["GO Num"])
     # left merge cases+crime to train/uof dataset
     df_merged = pd.merge(df_merged, df_uof, how = "left", on = ["GO Num", "Officer Serial Num"])
     # left merge crisis to cases+crime+train/uof datasets
