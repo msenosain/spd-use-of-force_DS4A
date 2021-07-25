@@ -32,19 +32,11 @@ def merge_datasets():
         'Clear By Desc', 'Call Type Desc','Case Type Initial Desc', 
         'Case Type Final Desc','Clear Time','Dispatch Address'], 
         axis = 1, inplace=True)
-    # drop columns in crime
-    # df_crime.drop(['Offense ID', 'Offense Start DateTime', 'Report DateTime', 
-    #     'NIBRS Offense Code', 'Precinct', 'Sector', 'Beat', 'MCPP', 
-    #     '100 Block Address', 'Longitude', 'Latitude', 'Year'], 
-    #     axis = 1, inplace=True)
     # drop columns in uof
     df_uof.drop(['File Num', 'Longitude', 'Latitude', 
         'Officer Title (as of Incident)','Precinct', 'Sector',
         #'Subject Gender', 'Subject Race', 
         'Occurred Date'], axis = 1, inplace=True)
-
-    # left merge cases to crime dataset
-    # df_merged = pd.merge(df_cases, df_crime, how = "left", on = ["GO Num"])
     # left merge cases+crime to train/uof dataset
     df_merged = pd.merge(df_cases, df_uof, how = "left", on = ["GO Num", "Officer Serial Num"])
     # left merge crisis to cases+crime+train/uof datasets
