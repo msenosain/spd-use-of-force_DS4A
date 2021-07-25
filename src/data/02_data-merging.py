@@ -24,7 +24,7 @@ def merge_datasets():
     df_crisis.drop(df_crisis[df_crisis["CAD Event ID"] == -1].index, inplace=True)
 
     # drop columns in crisis
-    df_crisis.drop(['OffenseIncident'], axis = 1, inplace=True)
+    df_crisis.drop(['OffenseIncident', 'Subject Gender', 'Subject Race'], axis = 1, inplace=True)
     # drop columns in cases
     df_cases.drop(['Officer Dispatch UID', 'Dispatch ID', 'AS Of Officer Title',
         'As_On_Officer Precinct_ID', 'As_On_Officer Precinct_Desc', 
@@ -39,8 +39,9 @@ def merge_datasets():
     #     axis = 1, inplace=True)
     # drop columns in uof
     df_uof.drop(['File Num', 'Longitude', 'Latitude', 
-        'Officer Title (as of Incident)','Precinct', 'Sector','Subject Gender', 
-        'Subject Race', 'Occurred Date'], axis = 1, inplace=True)
+        'Officer Title (as of Incident)','Precinct', 'Sector',
+        #'Subject Gender', 'Subject Race', 
+        'Occurred Date'], axis = 1, inplace=True)
 
     # left merge cases to crime dataset
     # df_merged = pd.merge(df_cases, df_crime, how = "left", on = ["GO Num"])
