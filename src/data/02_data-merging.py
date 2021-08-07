@@ -27,7 +27,7 @@ def merge_datasets():
     df_crisis.drop(['OffenseIncident', 'Subject Gender', 'Subject Race'], axis = 1, inplace=True)
     # drop columns in cases
     df_cases.drop(['Officer Dispatch UID', 'Dispatch ID', 'AS Of Officer Title',
-        'As_On_Officer Precinct_ID', 'As_On_Officer Precinct_Desc', 
+        'As_On_Officer Precinct_ID', #'As_On_Officer Precinct_Desc', 
         'As_On_Officer Squad_Desc', 'Partner Officer Serial Num', 
         'Clear By Desc', 'Call Type Desc','Case Type Initial Desc', 
         'Case Type Final Desc','Clear Time','Dispatch Address'], 
